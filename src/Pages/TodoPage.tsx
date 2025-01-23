@@ -69,7 +69,7 @@ const TodoPage = () => {
                       } cursor-pointer`}
                       onClick={() => toggleDone(index)}
                     />
-
+                    {/* change ni siya  */}
                     {/* Todo text */}
                     <span>{todo.text}</span>
                   </li>
