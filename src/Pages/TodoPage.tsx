@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input, Button } from "@chakra-ui/react";
 
 const TodoPage = () => {
@@ -7,6 +7,19 @@ const TodoPage = () => {
 
   // State to manage the list of todos, each with text and done status
   const [todos, setTodos] = useState<{ text: string; done: boolean }[]>([]);
+
+  // When user opened the website load the lists they created
+  useEffect(() => {
+    const storedTodos = JSON.parse(localStorage.getItem("todos") || "[]");
+    setTodos(storedTodos);
+  }, []);
+
+  // When list change save it to the browser
+  useEffect(() => {
+    if (todos.length > 0) {
+      localStorage.setItem("todos", JSON.stringify(todos));
+    }
+  }, [todos]);
 
   // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,11 +34,31 @@ const TodoPage = () => {
     }
   };
 
-  // Toggle the 'done' status of a todo
+  //This function will mark the tasks done
+  //I will move the task at the bottom when the task is done
   const toggleDone = (index: number) => {
     const updatedTodos = [...todos];
-    updatedTodos[index].done = !updatedTodos[index].done; // Toggle done status
+    updatedTodos[index].done = !updatedTodos[index].done;
+
+    // Move completed todo to the bottom of the list
+    if (updatedTodos[index].done) {
+      const completedTodo = updatedTodos.splice(index, 1)[0];
+      updatedTodos.push(completedTodo);
+    }
+
     setTodos(updatedTodos);
+  };
+
+  // Function to delete a todo item from the list
+  const deleteTodo = (index: number) => {
+    const updatedTodos = todos.filter((_, i) => i !== index);
+    setTodos(updatedTodos);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      addTodo(); // Add the todo if Enter is pressed
+    }
   };
 
   return (
@@ -46,6 +79,7 @@ const TodoPage = () => {
                   width="32rem"
                   value={input}
                   onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
                 />
                 <Button colorScheme="blue" onClick={addTodo}>
                   Send it
@@ -64,14 +98,18 @@ const TodoPage = () => {
                   >
                     <div
                       className={`w-5 h-5 border-3 borderist ${
-                        //I can't change the border color
                         todo.done ? "bg-gray-500" : "bg-white border-black"
                       } cursor-pointer`}
                       onClick={() => toggleDone(index)}
                     />
                     {/* change ni siya  */}
                     {/* Todo text */}
-                    <span>{todo.text}</span>
+                    <span
+                      className="cursor-pointer hover:text-red-500"
+                      onClick={() => deleteTodo(index)}
+                    >
+                      {todo.text}
+                    </span>
                   </li>
                 ))}
               </ul>
