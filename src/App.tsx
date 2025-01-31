@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 import { Button, ButtonGroup } from "@chakra-ui/react";
+import { BrowserRouter as Router } from "react-router-dom";
 import TodoPage from "./Pages/TodoPage";
 
 function App() {
@@ -8,7 +9,9 @@ function App() {
 
   return (
     <>
-      <TodoPage></TodoPage>
+      <Router>
+        <TodoPage></TodoPage>
+      </Router>
     </>
   );
 }
